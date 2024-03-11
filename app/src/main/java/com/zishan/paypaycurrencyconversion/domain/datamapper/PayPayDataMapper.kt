@@ -1,6 +1,7 @@
 package com.zishan.paypaycurrencyconversion.domain.datamapper
 
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
+import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
 import com.zishan.paypaycurrencyconversion.view.uimodel.CurrencyTypeUIModel
 import com.zishan.paypaycurrencyconversion.view.uimodel.ExchangeRateUIModel
 import kotlinx.coroutines.Dispatchers
@@ -20,18 +21,15 @@ class PayPayDataMapper @Inject constructor(private val dispatcher: Dispatchers) 
     }
 
     fun mapToCurrencyUIModel(
-        rates: Map<String, Double>,
-        currencyKeyList : List<String>,
-        currencyIndex: Int,
+        exchangeRateList: List<ExchangeRateEntity>,
+        selectedCurrencyRate: Double,
         textValue: Double,
-    ): List<ExchangeRateUIModel>? {
-        if (currencyIndex == 0) return listOf()
-        val currencyKey = currencyKeyList[currencyIndex - 1]
-        val currencyRate = rates[currencyKey]
-        return currencyRate?.run {
-            rates.map {
-                ExchangeRateUIModel(it.key, (textValue * (it.value / this)))
-            }
+    ): List<ExchangeRateUIModel> {
+        return exchangeRateList.map {
+            ExchangeRateUIModel(
+                it.currencyName,
+                (textValue * (it.currencyValue / selectedCurrencyRate))
+            )
         }
     }
 }

@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "refresh_frequency")
 data class RefreshFrequencyEntity(
-    @PrimaryKey(autoGenerate = true) val id : Int = 0,
+    @PrimaryKey
     val entityKey : String,
     val timeStamp : Long
 )

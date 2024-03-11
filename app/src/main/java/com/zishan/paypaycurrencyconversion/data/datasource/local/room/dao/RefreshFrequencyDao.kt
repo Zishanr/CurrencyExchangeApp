@@ -11,8 +11,7 @@ import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.R
 @Dao
 interface RefreshFrequencyDao {
 
-    // TODO Read onConflict
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTimeStamp(refreshFrequencyEntity: RefreshFrequencyEntity)
 
     @Query("SELECT timeStamp FROM refresh_frequency WHERE entityKey = :entityKey")

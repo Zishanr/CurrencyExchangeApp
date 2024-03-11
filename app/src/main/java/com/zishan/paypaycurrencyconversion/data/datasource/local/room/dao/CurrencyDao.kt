@@ -9,10 +9,10 @@ import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.C
 @Dao
 interface CurrencyDao {
 
-    //TODO Read
+    // TODO Read onConflict
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertData(currencyEntity: CurrencyEntity)
+    suspend fun insertCurrenciesData(currencyEntity: CurrencyEntity)
 
     @Query("SELECT * FROM currencies")
-    suspend fun getAllData():List<CurrencyEntity>
+    suspend fun getCurrenciesData():List<CurrencyEntity>
 }

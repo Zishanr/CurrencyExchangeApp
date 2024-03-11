@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "exchange_rate")
 data class ExchangeRateEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey
     val currencyName: String,
     val currencyValue : Double
 )
