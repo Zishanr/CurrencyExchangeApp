@@ -1,8 +1,8 @@
-package com.zishan.paypaycurrencyconversion.data.datasource
+package com.zishan.paypaycurrencyconversion.data.datasource.remote
 
-import com.zishan.paypaycurrencyconversion.data.repo.remoterepo.ExchangeCurrencyApi
-import com.zishan.paypaycurrencyconversion.data.repo.remoterepo.models.CurrencyExchangeRatesResponse
-import com.zishan.paypaycurrencyconversion.data.repo.remoterepo.models.CurrencyResponse
+import com.zishan.paypaycurrencyconversion.data.datasource.remote.ExchangeCurrencyApi
+import com.zishan.paypaycurrencyconversion.data.datasource.remote.RemoteDataSource
+import com.zishan.paypaycurrencyconversion.data.models.CurrencyExchangeRatesResponse
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val exchangeCurrencyApi: ExchangeCurrencyApi) :

@@ -4,22 +4,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zishan.paypaycurrencyconversion.usecase.CurrencyUseCase
+import com.zishan.paypaycurrencyconversion.domain.usecase.CurrencyUseCase
+import com.zishan.paypaycurrencyconversion.utils.launchAndCatchError
+import com.zishan.paypaycurrencyconversion.view.uimodel.CurrencyTypeUIModel
 import com.zishan.paypaycurrencyconversion.view.uimodel.ExchangeRateUIModel
-import kotlinx.coroutines.launch
+import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
+import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState.Fail
+import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState.Loading
+import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState.Success
 import javax.inject.Inject
 
 class PayPayViewModel @Inject constructor(private val currencyUseCase: CurrencyUseCase) :
     ViewModel() {
 
-    private val _currencyListLiveData: MutableLiveData<Result<List<String>>> = MutableLiveData()
-    val currencyListLiveData: LiveData<Result<List<String>>> = _currencyListLiveData
-
-    private val _currencyExchangeLiveData: MutableLiveData<List<ExchangeRateUIModel>> =
+    private val _currencyListLiveData: MutableLiveData<CurrencyExchangeUIState<List<CurrencyTypeUIModel>>> =
         MutableLiveData()
-    val currencyExchangeLiveData: LiveData<List<ExchangeRateUIModel>> =
-        _currencyExchangeLiveData
+    val currencyListLiveData: LiveData<CurrencyExchangeUIState<List<CurrencyTypeUIModel>>> =
+        _currencyListLiveData
 
+    private val _currencyExchangeLiveData: MutableLiveData<CurrencyExchangeUIState<List<ExchangeRateUIModel>>> =
+        MutableLiveData()
+    val currencyExchangeLiveData: LiveData<CurrencyExchangeUIState<List<ExchangeRateUIModel>>> =
+        _currencyExchangeLiveData
     var selectedSpinnerIndex = 0
 
     init {
@@ -27,17 +33,25 @@ class PayPayViewModel @Inject constructor(private val currencyUseCase: CurrencyU
     }
 
     private fun fetchCurrencies() {
-        viewModelScope.launch {
+        _currencyListLiveData.value = Loading
+        viewModelScope.launchAndCatchError(block = {
             val currencyData = currencyUseCase.getCurrenciesList()
-            _currencyListLiveData.value = Result.success(currencyData)
-        }
+            _currencyListLiveData.value = Success(currencyData)
+        }, onError = {
+            _currencyListLiveData.value = Fail(it)
+        })
     }
 
     fun fetchExchangeRate(textValue: Double) {
-        viewModelScope.launch {
+        _currencyExchangeLiveData.value = Loading
+        viewModelScope.launchAndCatchError(block = {
             val exchangeData = currencyUseCase.getExchangeRateData(selectedSpinnerIndex, textValue)
-            exchangeData?.let { _currencyExchangeLiveData.value = it }
-        }
+            exchangeData?.let { _currencyExchangeLiveData.value = Success(it) }
+        }, onError = {
+            _currencyExchangeLiveData.value = Fail(it)
+        })
     }
 
 }
+
+

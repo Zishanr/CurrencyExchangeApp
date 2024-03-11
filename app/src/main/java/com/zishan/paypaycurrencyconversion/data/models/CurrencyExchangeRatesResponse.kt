@@ -1,4 +1,4 @@
-package com.zishan.paypaycurrencyconversion.data.repo.remoterepo.models
+package com.zishan.paypaycurrencyconversion.data.models
 
 import com.google.gson.annotations.SerializedName
 

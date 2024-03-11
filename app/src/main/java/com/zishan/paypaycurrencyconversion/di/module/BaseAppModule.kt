@@ -6,9 +6,8 @@ import com.zishan.paypaycurrencyconversion.di.scope.ApplicationScope
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [NetworkModule::class])
-class BaseAppModule(var context: Context ) {
-
+@Module(includes = [NetworkModule::class, BaseAppDBModule::class])
+class BaseAppModule(private var context: Context ) {
 
     @Provides
     @ApplicationScope

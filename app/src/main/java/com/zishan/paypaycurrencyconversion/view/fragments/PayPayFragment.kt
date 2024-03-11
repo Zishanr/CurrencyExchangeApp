@@ -22,8 +22,11 @@ import com.zishan.paypaycurrencyconversion.di.component.DaggerPayPayComponent
 import com.zishan.paypaycurrencyconversion.di.factory.ViewModelProviderFactory
 import com.zishan.paypaycurrencyconversion.view.adapter.CurrencyExchangeAdapter
 import com.zishan.paypaycurrencyconversion.view.uimodel.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
 import com.zishan.paypaycurrencyconversion.view.viewmodel.PayPayViewModel
 import javax.inject.Inject
+
+private const val SPAN_SIZE = 3
 
 class PayPayFragment : Fragment() {
 
@@ -38,7 +41,7 @@ class PayPayFragment : Fragment() {
     }
     private val currencyRecyclerView: RecyclerView by lazy {
         fragmentPayPayBinding.currencyRecyclerView.apply {
-            this.layoutManager = GridLayoutManager(this.context, 3)
+            this.layoutManager = GridLayoutManager(this.context, SPAN_SIZE)
         }
     }
 
@@ -106,21 +109,43 @@ class PayPayFragment : Fragment() {
 
     private fun setUpObserver() {
         payPayViewModel.currencyListLiveData.observe(viewLifecycleOwner) {
-            when {
-                it.isSuccess -> {
+            when (it) {
+                is CurrencyExchangeUIState.Loading -> {
+
+                }
+
+                is CurrencyExchangeUIState.Success -> {
                     currencySpinnerAdapter?.run {
                         clear()
-                        addAll((it.getOrNull() as List<String>).toMutableList())
+                        addAll((it.data.map { currencyUIModel ->
+                            currencyUIModel.currency
+                        }))
                     }
+                }
+
+                is CurrencyExchangeUIState.Fail -> {
+
                 }
             }
         }
 
         payPayViewModel.currencyExchangeLiveData.observe(viewLifecycleOwner) {
-            currencyExchangeAdapter.submitList(it)
+            when (it) {
+                is CurrencyExchangeUIState.Loading -> {
+
+                }
+
+                is CurrencyExchangeUIState.Success -> {
+                    currencyExchangeAdapter.submitList(it.data)
+                }
+
+                is CurrencyExchangeUIState.Fail -> {
+
+                }
+            }
+
         }
     }
-
 
     private fun initInjection() {
         activity?.application?.let { application ->
