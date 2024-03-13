@@ -2,8 +2,8 @@ package com.zishan.paypaycurrencyconversion.domain.usecase
 
 import com.zishan.paypaycurrencyconversion.data.repository.PayPayRepo
 import com.zishan.paypaycurrencyconversion.domain.datamapper.PayPayDataMapper
-import com.zishan.paypaycurrencyconversion.view.uimodel.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.view.uimodel.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.view.uimodels.CurrencyTypeUIModel
+import com.zishan.paypaycurrencyconversion.view.uimodels.ExchangeRateUIModel
 import javax.inject.Inject
 
 class CurrencyUseCase @Inject constructor(

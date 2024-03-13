@@ -8,7 +8,6 @@ import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.E
 
 @Dao
 interface ExchangeRateDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExchangeRateData(exchangeRateEntity: ExchangeRateEntity)
 

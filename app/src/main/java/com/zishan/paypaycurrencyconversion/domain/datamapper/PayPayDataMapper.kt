@@ -2,8 +2,8 @@ package com.zishan.paypaycurrencyconversion.domain.datamapper
 
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
-import com.zishan.paypaycurrencyconversion.view.uimodel.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.view.uimodel.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.view.uimodels.CurrencyTypeUIModel
+import com.zishan.paypaycurrencyconversion.view.uimodels.ExchangeRateUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

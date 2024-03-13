@@ -1,41 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.PayPayFragment">
 
+
     <EditText
-        android:id="@+id/amountEditText"
+        android:id="@+id/amount_edit_text"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="30dp"
-        android:inputType="numberDecimal"
         android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="30dp"
+        android:autofillHints="Enter Amount"
         android:background="@drawable/edit_text_border"
-        app:layout_constraintTop_toTopOf="parent"
-        android:autofillHints="Enter Amount"/>
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/currencySpinner"
+        android:id="@+id/currency_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:padding="10dp"
         android:prompt="@string/spinner"
         android:spinnerMode="dropdown"
-        app:layout_constraintTop_toBottomOf="@id/amountEditText"/>
+        app:layout_constraintTop_toBottomOf="@id/amount_edit_text" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/currencyRecyclerView"
+        android:id="@+id/currency_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/currencySpinner"
-        tools:listitem="@layout/currency_exchnage_item"/>
+        app:layout_constraintTop_toBottomOf="@id/currency_spinner"
+        tools:listitem="@layout/currency_exchnage_item" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/view_group"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="amount_edit_text, currency_spinner, currency_recycler_view" />
+
+    <TextView
+        android:id="@+id/error_status_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center"
+        android:text="@string/error_status"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ProgressBar
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

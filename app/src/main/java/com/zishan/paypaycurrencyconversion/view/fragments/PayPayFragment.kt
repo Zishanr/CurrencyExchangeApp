@@ -9,19 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.VERTICAL
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.zishan.paypaycurrencyconversion.MainApplication
 import com.zishan.paypaycurrencyconversion.databinding.FragmentPayPayBinding
 import com.zishan.paypaycurrencyconversion.di.component.DaggerPayPayComponent
 import com.zishan.paypaycurrencyconversion.di.factory.ViewModelProviderFactory
 import com.zishan.paypaycurrencyconversion.view.adapter.CurrencyExchangeAdapter
-import com.zishan.paypaycurrencyconversion.view.uimodel.ExchangeRateUIModel
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
 import com.zishan.paypaycurrencyconversion.view.viewmodel.PayPayViewModel
 import javax.inject.Inject
@@ -44,7 +41,6 @@ class PayPayFragment : Fragment() {
             this.layoutManager = GridLayoutManager(this.context, SPAN_SIZE)
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -99,7 +95,6 @@ class PayPayFragment : Fragment() {
                 fetchExchangeRateData(s.toString())
             }
         })
-
         setupRecyclerView()
     }
 
@@ -111,7 +106,7 @@ class PayPayFragment : Fragment() {
         payPayViewModel.currencyListLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is CurrencyExchangeUIState.Loading -> {
-
+                    fragmentPayPayBinding.loader.visibility = View.VISIBLE
                 }
 
                 is CurrencyExchangeUIState.Success -> {
@@ -120,30 +115,47 @@ class PayPayFragment : Fragment() {
                         addAll((it.data.map { currencyUIModel ->
                             currencyUIModel.currency
                         }))
+                        fragmentPayPayBinding.loader.visibility = View.GONE
+                        fragmentPayPayBinding.viewGroup.visibility = View.VISIBLE
                     }
                 }
-
                 is CurrencyExchangeUIState.Fail -> {
-
+                    fragmentPayPayBinding.loader.visibility = View.GONE
+                    fragmentPayPayBinding.errorStatusText.visibility = View.VISIBLE
+                    fragmentPayPayBinding.errorStatusText.text = it.throwable.message
+                    Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
         payPayViewModel.currencyExchangeLiveData.observe(viewLifecycleOwner) {
+            fragmentPayPayBinding.errorStatusText.visibility = View.GONE
             when (it) {
                 is CurrencyExchangeUIState.Loading -> {
-
+                    fragmentPayPayBinding.loader.visibility = View.VISIBLE
                 }
 
                 is CurrencyExchangeUIState.Success -> {
                     currencyExchangeAdapter.submitList(it.data)
+                    fragmentPayPayBinding.loader.visibility = View.GONE
                 }
 
                 is CurrencyExchangeUIState.Fail -> {
-
+                    fragmentPayPayBinding.loader.visibility = View.GONE
+                    fragmentPayPayBinding.errorStatusText.visibility = View.VISIBLE
+                    fragmentPayPayBinding.errorStatusText.text = it.throwable.message
+                    Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
 
+        payPayViewModel.internetStatus.observe(viewLifecycleOwner){
+            if(it){
+                fragmentPayPayBinding.errorStatusText.visibility = View.GONE
+                payPayViewModel.fetchCurrencies()
+            }else{
+                fragmentPayPayBinding.errorStatusText.visibility = View.VISIBLE
+            }
         }
     }
 

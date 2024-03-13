@@ -1,15 +1,16 @@
 package com.zishan.paypaycurrencyconversion.data.datasource.remote
 
+import com.zishan.paypaycurrencyconversion.BuildConfig
 import com.zishan.paypaycurrencyconversion.data.models.CurrencyExchangeRatesResponse
-import com.zishan.paypaycurrencyconversion.data.models.CurrencyResponse
+import retrofit2.Response
 import retrofit2.http.GET
 
 interface ExchangeCurrencyApi {
 
-    @GET("currencies.json?app_id=b8af16750bbe4727bc5a7d031423a5c3")
-    suspend fun getCurrencies(): Map<String, String>
+    @GET("currencies.json")
+    suspend fun getCurrencies(): Response<Map<String, String>>
 
-    @GET("latest.json?app_id=b8af16750bbe4727bc5a7d031423a5c3")
-    suspend fun getExchangeRates(): CurrencyExchangeRatesResponse
+    @GET("latest.json")
+    suspend fun getExchangeRates(): Response<CurrencyExchangeRatesResponse>
 
 }

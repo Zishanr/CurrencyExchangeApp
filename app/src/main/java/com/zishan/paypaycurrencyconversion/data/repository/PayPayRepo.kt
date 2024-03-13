@@ -5,8 +5,13 @@ import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.C
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.RefreshFrequencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.remote.RemoteDataSource
+import com.zishan.paypaycurrencyconversion.data.models.CurrencyExchangeRatesResponse
+import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.CURRENCY_TIMESTAMP_KEY
+import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.EXCHANGE_RATE_TIMESTAMP_KEY
+import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.REFRESH_THRESHOLD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class PayPayRepo @Inject constructor(
@@ -15,18 +20,22 @@ class PayPayRepo @Inject constructor(
     private val dispatcher: Dispatchers
 
 ) {
-    // TODO Fix code
     suspend fun getCurrencies(): List<CurrencyEntity> {
-        return if (updateFromRemoteData("currency")) {
-            val data = remoteDataSource.getCurrencies()
+        return if (updateFromRemoteData(CURRENCY_TIMESTAMP_KEY)) {
+            val currencyData = remoteDataSource.getCurrencies()
             withContext(dispatcher.IO) {
-                val d = data.map { CurrencyEntity(currencyName = it.key, currencyValue = it.value) }
-                d.forEach {
+                val currencyEntityList = currencyData.map {
+                    CurrencyEntity(
+                        currencyName = it.key,
+                        currencyValue = it.value
+                    )
+                }
+                currencyEntityList.forEach {
                     localDataSource.saveCurrencies(it)
                 }
                 localDataSource.saveTimeStamp(
                     RefreshFrequencyEntity(
-                        entityKey = "currency",
+                        entityKey = CURRENCY_TIMESTAMP_KEY,
                         timeStamp = System.currentTimeMillis()
                     )
                 )
@@ -37,12 +46,24 @@ class PayPayRepo @Inject constructor(
         }
     }
 
-    // TODO Fix code
+    // TODO check Try catch again for logic
     suspend fun getExchangeRates(): List<ExchangeRateEntity> {
-        return if (updateFromRemoteData("exchange_rate")) {
-            val d = remoteDataSource.getExchangeRates()
+        return if (updateFromRemoteData(EXCHANGE_RATE_TIMESTAMP_KEY)) {
+
+            val exchangeRateData: CurrencyExchangeRatesResponse
+            try {
+                exchangeRateData = remoteDataSource.getExchangeRates()
+            } catch (t: Throwable) {
+                val currencyDBData = localDataSource.getExchangeRates()
+                if (currencyDBData.isEmpty()) {
+                    throw t
+                } else {
+                    return currencyDBData
+                }
+            }
+
             withContext(dispatcher.IO) {
-                d.rates.forEach {
+                exchangeRateData.rates.forEach {
                     localDataSource.saveExchangeRates(
                         ExchangeRateEntity(
                             currencyName = it.key,
@@ -52,7 +73,7 @@ class PayPayRepo @Inject constructor(
                 }
                 localDataSource.saveTimeStamp(
                     RefreshFrequencyEntity(
-                        entityKey = "exchange_rate",
+                        entityKey = EXCHANGE_RATE_TIMESTAMP_KEY,
                         timeStamp = System.currentTimeMillis()
                     )
                 )
@@ -70,10 +91,10 @@ class PayPayRepo @Inject constructor(
     }
 
 
-    //TODO Fix
+    // TODO
     private suspend fun updateFromRemoteData(entityKey: String): Boolean {
-        val diff = System.currentTimeMillis() - (localDataSource.getTimeStamp(entityKey) ?: 0L)
-//        return ((diff / 1000) / 60) > 30
-        return ((diff / 1000)) > 300
+        return true
+        val timeDiff = System.currentTimeMillis() - (localDataSource.getTimeStamp(entityKey) ?: 0L)
+        return timeDiff > TimeUnit.MINUTES.toMillis(REFRESH_THRESHOLD)
     }
 }

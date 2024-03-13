@@ -13,7 +13,6 @@ class LocalDataSource @Inject constructor(
     private val exchangeRateDao: ExchangeRateDao,
     private val refreshFrequencyDao: RefreshFrequencyDao
 ) {
-
     suspend fun saveCurrencies(currencyEntity: CurrencyEntity) {
         currencyDao.insertCurrenciesData(currencyEntity)
     }

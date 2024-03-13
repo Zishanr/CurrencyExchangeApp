@@ -18,6 +18,5 @@ abstract class CurrencyDataBase : RoomDatabase() {
     abstract val currencyDao: CurrencyDao
     abstract val exchangeRateDao: ExchangeRateDao
     abstract val refreshFrequencyDao: RefreshFrequencyDao
-
 }
 
