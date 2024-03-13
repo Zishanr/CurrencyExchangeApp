@@ -15,12 +15,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zishan.paypaycurrencyconversion.MainApplication
+import com.zishan.paypaycurrencyconversion.R
 import com.zishan.paypaycurrencyconversion.databinding.FragmentPayPayBinding
 import com.zishan.paypaycurrencyconversion.di.component.DaggerPayPayComponent
 import com.zishan.paypaycurrencyconversion.di.factory.ViewModelProviderFactory
 import com.zishan.paypaycurrencyconversion.view.adapter.CurrencyExchangeAdapter
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
 import com.zishan.paypaycurrencyconversion.view.viewmodel.PayPayViewModel
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 private const val SPAN_SIZE = 3
@@ -92,7 +94,11 @@ class PayPayFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                fetchExchangeRateData(s.toString())
+                if (s.toString().isEmpty()) {
+                    currencyExchangeAdapter.submitList(emptyList())
+                } else {
+                    fetchExchangeRateData(s.toString())
+                }
             }
         })
 
@@ -117,20 +123,24 @@ class PayPayFragment : Fragment() {
                             currencyUIModel.currency
                         }))
                         fragmentPayPayBinding.loader.visibility = View.GONE
-                        fragmentPayPayBinding.viewGroup.visibility = View.VISIBLE
                     }
                 }
+
                 is CurrencyExchangeUIState.Fail -> {
                     fragmentPayPayBinding.loader.visibility = View.GONE
-                    fragmentPayPayBinding.errorStatusText.visibility = View.VISIBLE
-                    fragmentPayPayBinding.errorStatusText.text = it.throwable.message
-                    Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT).show()
+                    if (it.throwable is UnknownHostException) {
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, ErrorStateFragment())
+                            .commit()
+                    } else {
+                        Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }
 
         payPayViewModel.currencyExchangeLiveData.observe(viewLifecycleOwner) {
-            fragmentPayPayBinding.errorStatusText.visibility = View.GONE
             when (it) {
                 is CurrencyExchangeUIState.Loading -> {
                     fragmentPayPayBinding.loader.visibility = View.VISIBLE
@@ -143,19 +153,8 @@ class PayPayFragment : Fragment() {
 
                 is CurrencyExchangeUIState.Fail -> {
                     fragmentPayPayBinding.loader.visibility = View.GONE
-                    fragmentPayPayBinding.errorStatusText.visibility = View.VISIBLE
-                    fragmentPayPayBinding.errorStatusText.text = it.throwable.message
                     Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
-        }
-
-        payPayViewModel.internetStatus.observe(viewLifecycleOwner){
-            if(it){
-                fragmentPayPayBinding.errorStatusText.visibility = View.GONE
-                payPayViewModel.fetchCurrencies()
-            }else{
-                fragmentPayPayBinding.errorStatusText.visibility = View.VISIBLE
             }
         }
     }

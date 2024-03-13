@@ -9,7 +9,6 @@ import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.C
 @Dao
 interface CurrencyDao {
 
-    // TODO Read onConflict
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCurrenciesData(currencyEntity: CurrencyEntity)
 

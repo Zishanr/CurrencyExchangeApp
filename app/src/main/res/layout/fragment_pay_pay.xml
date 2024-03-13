@@ -38,27 +38,6 @@
         app:layout_constraintTop_toBottomOf="@id/currency_spinner"
         tools:listitem="@layout/currency_exchnage_item" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/view_group"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="amount_edit_text, currency_spinner, currency_recycler_view" />
-
-    <TextView
-        android:id="@+id/error_status_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:gravity="center"
-        android:text="@string/error_status"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <ProgressBar
         android:id="@+id/loader"
         android:layout_width="wrap_content"
@@ -67,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

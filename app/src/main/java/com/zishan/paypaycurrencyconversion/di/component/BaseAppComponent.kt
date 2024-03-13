@@ -2,8 +2,6 @@ package com.zishan.paypaycurrencyconversion.di.component
 
 import android.app.Application
 import android.content.Context
-import com.zishan.paypaycurrencyconversion.data.datasource.local.room.dao.CurrencyDao
-import com.zishan.paypaycurrencyconversion.data.datasource.local.room.dao.RefreshFrequencyDao
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.db.CurrencyDataBase
 import com.zishan.paypaycurrencyconversion.di.module.BaseAppModule
 import com.zishan.paypaycurrencyconversion.di.qualifier.ApplicationContext
@@ -21,7 +19,5 @@ interface BaseAppComponent {
     fun getRetrofit(): Retrofit
 
     fun getAppDB(): CurrencyDataBase
-
-    fun getApplication() : Application
 
 }

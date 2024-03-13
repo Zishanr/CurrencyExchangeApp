@@ -12,12 +12,6 @@ class BaseAppModule(private var application : Application) {
 
     @Provides
     @ApplicationScope
-    fun providesApplication() : Application {
-        return application
-    }
-
-    @Provides
-    @ApplicationScope
     @ApplicationContext
     fun providesApplicationContext() : Context {
         return application.applicationContext

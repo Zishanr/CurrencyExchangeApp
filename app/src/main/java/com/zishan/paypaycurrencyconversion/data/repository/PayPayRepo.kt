@@ -18,10 +18,9 @@ class PayPayRepo @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val dispatcher: Dispatchers
-
 ) {
     suspend fun getCurrencies(): List<CurrencyEntity> {
-        return if (updateFromRemoteData(CURRENCY_TIMESTAMP_KEY)) {
+        return if (isRefreshData(CURRENCY_TIMESTAMP_KEY)) {
             val currencyData = remoteDataSource.getCurrencies()
             withContext(dispatcher.IO) {
                 val currencyEntityList = currencyData.map {
@@ -46,10 +45,8 @@ class PayPayRepo @Inject constructor(
         }
     }
 
-    // TODO check Try catch again for logic
     suspend fun getExchangeRates(): List<ExchangeRateEntity> {
-        return if (updateFromRemoteData(EXCHANGE_RATE_TIMESTAMP_KEY)) {
-
+        return if (isRefreshData(EXCHANGE_RATE_TIMESTAMP_KEY)) {
             val exchangeRateData: CurrencyExchangeRatesResponse
             try {
                 exchangeRateData = remoteDataSource.getExchangeRates()
@@ -90,8 +87,7 @@ class PayPayRepo @Inject constructor(
         }
     }
 
-
-    private suspend fun updateFromRemoteData(entityKey: String): Boolean {
+    private suspend fun isRefreshData(entityKey: String): Boolean {
         val timeDiff = System.currentTimeMillis() - (localDataSource.getTimeStamp(entityKey) ?: 0L)
         return timeDiff > TimeUnit.MINUTES.toMillis(REFRESH_THRESHOLD)
     }

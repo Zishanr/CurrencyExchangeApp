@@ -17,15 +17,12 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-
     }
 
     buildTypes {
 
         buildTypes {
             debug {
-                buildConfigField("String", "BASE_URL", "${rootProject.properties["BASE_URL"]}")
                 buildConfigField(
                     "String",
                     "EXCHANGE_APP_ID",
@@ -38,7 +35,6 @@ android {
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
                 )
-                buildConfigField("String", "BASE_URL", "${rootProject.properties["BASE_URL"]}")
                 buildConfigField(
                     "String",
                     "EXCHANGE_APP_ID",

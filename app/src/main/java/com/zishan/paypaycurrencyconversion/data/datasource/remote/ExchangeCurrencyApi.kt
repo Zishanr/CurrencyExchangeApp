@@ -1,6 +1,5 @@
 package com.zishan.paypaycurrencyconversion.data.datasource.remote
 
-import com.zishan.paypaycurrencyconversion.BuildConfig
 import com.zishan.paypaycurrencyconversion.data.models.CurrencyExchangeRatesResponse
 import retrofit2.Response
 import retrofit2.http.GET

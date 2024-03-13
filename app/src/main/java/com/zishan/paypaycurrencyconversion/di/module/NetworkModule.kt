@@ -24,7 +24,7 @@ object NetworkModule {
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(PayPayConstant.NetworkConst.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(gsonConverterFactory)
             .build()
@@ -61,7 +61,6 @@ object NetworkModule {
             }
             okHttpClientBuilder.addInterceptor(loggingInterceptor)
         }
-
         return okHttpClientBuilder.build()
     }
 }
