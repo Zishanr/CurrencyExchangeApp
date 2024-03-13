@@ -10,6 +10,8 @@ import javax.inject.Inject
 
 class PayPayDataMapper @Inject constructor(private val dispatcher: Dispatchers) {
 
+
+    // TODO
     suspend fun mapToCurrencyUIList(currencyData: List<CurrencyEntity>): List<CurrencyTypeUIModel> {
         return withContext(dispatcher.Default) {
             currencyData.map {

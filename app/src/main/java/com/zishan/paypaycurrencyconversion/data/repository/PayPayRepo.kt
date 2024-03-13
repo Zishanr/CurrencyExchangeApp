@@ -91,9 +91,7 @@ class PayPayRepo @Inject constructor(
     }
 
 
-    // TODO
     private suspend fun updateFromRemoteData(entityKey: String): Boolean {
-        return true
         val timeDiff = System.currentTimeMillis() - (localDataSource.getTimeStamp(entityKey) ?: 0L)
         return timeDiff > TimeUnit.MINUTES.toMillis(REFRESH_THRESHOLD)
     }

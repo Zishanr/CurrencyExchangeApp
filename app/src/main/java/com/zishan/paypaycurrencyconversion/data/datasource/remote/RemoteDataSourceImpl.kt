@@ -8,7 +8,6 @@ import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val exchangeCurrencyApi: ExchangeCurrencyApi) :
     RemoteDataSource {
-
     override suspend fun getCurrencies(): Map<String, String> {
         return processResponse(exchangeCurrencyApi.getCurrencies())
     }
