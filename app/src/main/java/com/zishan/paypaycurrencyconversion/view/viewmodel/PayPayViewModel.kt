@@ -1,16 +1,13 @@
 package com.zishan.paypaycurrencyconversion.view.viewmodel
 
-import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zishan.paypaycurrencyconversion.di.qualifier.ApplicationContext
 import com.zishan.paypaycurrencyconversion.domain.usecase.CurrencyUseCase
 import com.zishan.paypaycurrencyconversion.utils.launchAndCatchError
 import com.zishan.paypaycurrencyconversion.view.uimodels.CurrencyTypeUIModel
@@ -22,12 +19,10 @@ import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState.
 import javax.inject.Inject
 
 
-// TODO convert to AndroidViewModel
 class PayPayViewModel @Inject constructor(
     private val currencyUseCase: CurrencyUseCase,
-    @ApplicationContext val context: Context
-) :
-    ViewModel() {
+    private val application: Application
+) : AndroidViewModel(application) {
 
     private val _currencyListLiveData: MutableLiveData<CurrencyExchangeUIState<List<CurrencyTypeUIModel>>> =
         MutableLiveData()
@@ -44,12 +39,13 @@ class PayPayViewModel @Inject constructor(
     var selectedSpinnerIndex = 0
 
     init {
+        // TODO Check
         checkInternetStatus()
     }
 
     private fun checkInternetStatus() {
         val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(network)
         if (capabilities == null) {
@@ -82,7 +78,6 @@ class PayPayViewModel @Inject constructor(
             _currencyExchangeLiveData.value = Fail(it)
         })
     }
-
 }
 
 

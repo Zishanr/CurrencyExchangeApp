@@ -95,6 +95,7 @@ class PayPayFragment : Fragment() {
                 fetchExchangeRateData(s.toString())
             }
         })
+
         setupRecyclerView()
     }
 

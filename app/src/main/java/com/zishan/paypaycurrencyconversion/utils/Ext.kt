@@ -20,3 +20,6 @@ fun CoroutineScope.launchAndCatchError(
         }
     }
 }
+
+// Currency Formatter
+fun Double.formatAsCurrency(): String = "%.2f".format(this)

@@ -22,4 +22,6 @@ interface BaseAppComponent {
 
     fun getAppDB(): CurrencyDataBase
 
+    fun getApplication() : Application
+
 }
