@@ -1,9 +1,10 @@
 package com.zishan.paypaycurrencyconversion.domain.usecase
 
+import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.repository.PayPayRepo
 import com.zishan.paypaycurrencyconversion.domain.datamapper.PayPayDataMapper
-import com.zishan.paypaycurrencyconversion.view.uimodels.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.view.uimodels.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
+import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
 import javax.inject.Inject
 
 class CurrencyUseCase @Inject constructor(
@@ -14,10 +15,14 @@ class CurrencyUseCase @Inject constructor(
 
     suspend fun getCurrenciesList(): List<CurrencyTypeUIModel> {
         val currencyData = payPayRepo.getCurrencies()
+        saveCurrencyKeyList(currencyData)
+        return dataMapper.mapToCurrencyUIList(currencyData)
+    }
+
+    fun saveCurrencyKeyList(currencyData: List<CurrencyEntity>) {
         currencyData.forEach {
             currencyKeyList.add(it.currencyName)
         }
-        return dataMapper.mapToCurrencyUIList(currencyData)
     }
 
     suspend fun getExchangeRateData(

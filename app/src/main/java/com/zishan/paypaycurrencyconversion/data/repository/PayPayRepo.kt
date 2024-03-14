@@ -1,5 +1,6 @@
 package com.zishan.paypaycurrencyconversion.data.repository
 
+import com.zishan.paypaycurrencyconversion.common.CoroutineDispatchers
 import com.zishan.paypaycurrencyconversion.data.datasource.local.LocalDataSource
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
@@ -8,21 +9,20 @@ import com.zishan.paypaycurrencyconversion.data.datasource.remote.RemoteDataSour
 import com.zishan.paypaycurrencyconversion.data.models.CurrencyExchangeRatesResponse
 import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.CURRENCY_TIMESTAMP_KEY
 import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.EXCHANGE_RATE_TIMESTAMP_KEY
-import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.REFRESH_THRESHOLD
-import kotlinx.coroutines.Dispatchers
+import com.zishan.paypaycurrencyconversion.utils.PayPayUtils
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class PayPayRepo @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
-    private val dispatcher: Dispatchers
+    private val dispatcher: CoroutineDispatchers,
+    private val payPayUtils: PayPayUtils
 ) {
     suspend fun getCurrencies(): List<CurrencyEntity> {
-        return if (isRefreshData(CURRENCY_TIMESTAMP_KEY)) {
+        return if (payPayUtils.isRefreshData(localDataSource.getTimeStamp(CURRENCY_TIMESTAMP_KEY))) {
             val currencyData = remoteDataSource.getCurrencies()
-            withContext(dispatcher.IO) {
+            withContext(dispatcher.io) {
                 val currencyEntityList = currencyData.map {
                     CurrencyEntity(
                         currencyName = it.key,
@@ -46,7 +46,7 @@ class PayPayRepo @Inject constructor(
     }
 
     suspend fun getExchangeRates(): List<ExchangeRateEntity> {
-        return if (isRefreshData(EXCHANGE_RATE_TIMESTAMP_KEY)) {
+        return if (payPayUtils.isRefreshData(localDataSource.getTimeStamp(EXCHANGE_RATE_TIMESTAMP_KEY))) {
             val exchangeRateData: CurrencyExchangeRatesResponse
             try {
                 exchangeRateData = remoteDataSource.getExchangeRates()
@@ -59,7 +59,7 @@ class PayPayRepo @Inject constructor(
                 }
             }
 
-            withContext(dispatcher.IO) {
+            withContext(dispatcher.io) {
                 exchangeRateData.rates.forEach {
                     localDataSource.saveExchangeRates(
                         ExchangeRateEntity(
@@ -82,13 +82,8 @@ class PayPayRepo @Inject constructor(
     }
 
     suspend fun getSelectedCurrencyRate(currencyKey: String): Double {
-        return withContext(dispatcher.IO) {
+        return withContext(dispatcher.io) {
             localDataSource.getSelectedCurrencyRate(currencyKey)
         }
-    }
-
-    private suspend fun isRefreshData(entityKey: String): Boolean {
-        val timeDiff = System.currentTimeMillis() - (localDataSource.getTimeStamp(entityKey) ?: 0L)
-        return timeDiff > TimeUnit.MINUTES.toMillis(REFRESH_THRESHOLD)
     }
 }

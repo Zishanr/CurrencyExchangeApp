@@ -5,7 +5,6 @@ import com.zishan.paypaycurrencyconversion.data.datasource.remote.RemoteDataSour
 import com.zishan.paypaycurrencyconversion.data.datasource.remote.RemoteDataSourceImpl
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.Dispatchers
 import retrofit2.Retrofit
 
 @Module
@@ -19,10 +18,5 @@ class PayPayAppModule {
     @Provides
     fun provideRemoteDataSource(exchangeCurrencyApi: ExchangeCurrencyApi): RemoteDataSource {
         return RemoteDataSourceImpl(exchangeCurrencyApi)
-    }
-
-    @Provides
-    fun provideDispatcher(): Dispatchers {
-        return Dispatchers
     }
 }

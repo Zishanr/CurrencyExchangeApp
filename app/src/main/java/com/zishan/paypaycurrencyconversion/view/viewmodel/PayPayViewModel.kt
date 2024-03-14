@@ -1,18 +1,14 @@
 package com.zishan.paypaycurrencyconversion.view.viewmodel
 
-import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import androidx.lifecycle.AndroidViewModel
+import android.text.Editable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
+import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
 import com.zishan.paypaycurrencyconversion.domain.usecase.CurrencyUseCase
 import com.zishan.paypaycurrencyconversion.utils.launchAndCatchError
-import com.zishan.paypaycurrencyconversion.view.uimodels.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.view.uimodels.ExchangeRateUIModel
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState.Fail
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState.Loading
@@ -40,7 +36,7 @@ class PayPayViewModel @Inject constructor(
         fetchCurrencies()
     }
 
-    private fun fetchCurrencies() {
+    fun fetchCurrencies() {
         _currencyListLiveData.value = Loading
         viewModelScope.launchAndCatchError(block = {
             val currencyData = currencyUseCase.getCurrenciesList()
@@ -58,6 +54,14 @@ class PayPayViewModel @Inject constructor(
         }, onError = {
             _currencyExchangeLiveData.value = Fail(it)
         })
+    }
+
+    fun fetchSelectedCurrencyRate(value: Editable?) {
+        if (!value.isNullOrEmpty()) {
+            fetchExchangeRate(value.toString().toDouble())
+        } else {
+            _currencyExchangeLiveData.value = Success(emptyList())
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-package com.zishan.paypaycurrencyconversion.view.uimodels
+package com.zishan.paypaycurrencyconversion.domain.uimodels
 
 data class ExchangeRateUIModel (
     val currencyName : String,

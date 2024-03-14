@@ -1,19 +1,18 @@
 package com.zishan.paypaycurrencyconversion.domain.datamapper
 
+import com.zishan.paypaycurrencyconversion.common.CoroutineDispatchers
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
-import com.zishan.paypaycurrencyconversion.view.uimodels.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.view.uimodels.ExchangeRateUIModel
-import kotlinx.coroutines.Dispatchers
+import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
+import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class PayPayDataMapper @Inject constructor(private val dispatcher: Dispatchers) {
+class PayPayDataMapper @Inject constructor(private val dispatcher: CoroutineDispatchers) {
 
-
-    // TODO
     suspend fun mapToCurrencyUIList(currencyData: List<CurrencyEntity>): List<CurrencyTypeUIModel> {
-        return withContext(dispatcher.Default) {
+        // Using Default dispatcher as the parsing of list can be extensive
+        return withContext(dispatcher.default) {
             currencyData.map {
                 CurrencyTypeUIModel("${it.currencyName} : ${it.currencyValue}")
             }.toMutableList().apply {
@@ -22,6 +21,7 @@ class PayPayDataMapper @Inject constructor(private val dispatcher: Dispatchers) 
         }
     }
 
+    // TODO
     fun mapToCurrencyUIModel(
         exchangeRateList: List<ExchangeRateEntity>,
         selectedCurrencyRate: Double,

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -19,13 +18,15 @@ import com.zishan.paypaycurrencyconversion.R
 import com.zishan.paypaycurrencyconversion.databinding.FragmentPayPayBinding
 import com.zishan.paypaycurrencyconversion.di.component.DaggerPayPayComponent
 import com.zishan.paypaycurrencyconversion.di.factory.ViewModelProviderFactory
+import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
+import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.SPAN_SIZE
+import com.zishan.paypaycurrencyconversion.utils.showToast
 import com.zishan.paypaycurrencyconversion.view.adapter.CurrencyExchangeAdapter
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
 import com.zishan.paypaycurrencyconversion.view.viewmodel.PayPayViewModel
 import java.net.UnknownHostException
 import javax.inject.Inject
 
-private const val SPAN_SIZE = 3
 
 class PayPayFragment : Fragment() {
 
@@ -81,7 +82,7 @@ class PayPayFragment : Fragment() {
                         id: Long
                     ) {
                         payPayViewModel.selectedSpinnerIndex = position
-                        fetchExchangeRateData(fragmentPayPayBinding.amountEditText.text.toString())
+                        payPayViewModel.fetchSelectedCurrencyRate(fragmentPayPayBinding.amountEditText.text)
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -93,12 +94,8 @@ class PayPayFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-            override fun afterTextChanged(s: Editable?) {
-                if (s.toString().isEmpty()) {
-                    currencyExchangeAdapter.submitList(emptyList())
-                } else {
-                    fetchExchangeRateData(s.toString())
-                }
+            override fun afterTextChanged(editable: Editable?) {
+                payPayViewModel.fetchSelectedCurrencyRate(editable)
             }
         })
 
@@ -117,24 +114,16 @@ class PayPayFragment : Fragment() {
                 }
 
                 is CurrencyExchangeUIState.Success -> {
-                    currencySpinnerAdapter?.run {
-                        clear()
-                        addAll((it.data.map { currencyUIModel ->
-                            currencyUIModel.currency
-                        }))
-                        fragmentPayPayBinding.loader.visibility = View.GONE
-                    }
+                    submitToArrayAdapter(it.data)
+                    fragmentPayPayBinding.loader.visibility = View.GONE
                 }
 
                 is CurrencyExchangeUIState.Fail -> {
                     fragmentPayPayBinding.loader.visibility = View.GONE
                     if (it.throwable is UnknownHostException) {
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_container, ErrorStateFragment())
-                            .commit()
+                        showErrorState()
                     } else {
-                        Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT)
-                            .show()
+                        context?.showToast("${it.throwable.message}")
                     }
                 }
             }
@@ -153,10 +142,25 @@ class PayPayFragment : Fragment() {
 
                 is CurrencyExchangeUIState.Fail -> {
                     fragmentPayPayBinding.loader.visibility = View.GONE
-                    Toast.makeText(context, "${it.throwable.message}", Toast.LENGTH_SHORT).show()
+                    context?.showToast("${it.throwable.message}")
                 }
             }
         }
+    }
+
+    private fun submitToArrayAdapter(data: List<CurrencyTypeUIModel>) {
+        currencySpinnerAdapter?.run {
+            clear()
+            addAll((data.map { currencyUIModel ->
+                currencyUIModel.currency
+            }))
+        }
+    }
+
+    private fun showErrorState() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ErrorStateFragment())
+            .commit()
     }
 
     private fun initInjection() {
@@ -164,12 +168,6 @@ class PayPayFragment : Fragment() {
             DaggerPayPayComponent.builder()
                 .baseAppComponent((application as MainApplication).getBaseComponent()).build()
                 .inject(this)
-        }
-    }
-
-    private fun fetchExchangeRateData(textValue: String) {
-        textValue.toDoubleOrNull()?.let {
-            payPayViewModel.fetchExchangeRate(it)
         }
     }
 

@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.zishan.paypaycurrencyconversion.R
-import com.zishan.paypaycurrencyconversion.view.uimodels.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
 
 class CurrencyExchangeAdapter(diffCallback: DiffUtil.ItemCallback<ExchangeRateUIModel> = ComponentsDiffCallBacks()) :
     ListAdapter<ExchangeRateUIModel, CurrencyExchangeVH>(diffCallback) {

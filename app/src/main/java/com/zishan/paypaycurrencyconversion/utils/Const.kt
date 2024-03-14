@@ -3,6 +3,7 @@ package com.zishan.paypaycurrencyconversion.utils
 
 object PayPayConstant {
     const val EXCHANGE_APP_ID_KEY = "app_id"
+    const val SPAN_SIZE = 3
     object NetworkConst {
         const val BASE_URL = "https://openexchangerates.org/api/"
         const val HTTP_SUCCESS = 200
