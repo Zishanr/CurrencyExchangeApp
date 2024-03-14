@@ -1,22 +1,25 @@
 package com.zishan.paypaycurrencyconversion.view.viewmodel
 
+import android.text.Editable
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.zishan.paypaycurrencyconversion.CoroutineTestDispatchersProvider
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
 import com.zishan.paypaycurrencyconversion.domain.usecase.CurrencyUseCase
-import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
+import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,8 +32,8 @@ class PayPayViewModelTest {
     private lateinit var dispatcher: CoroutineTestDispatchersProvider
 
 
-    private lateinit var currencyListUIModel: List<CurrencyTypeUIModel>
-    private lateinit var exchangeRateUiModelList: List<ExchangeRateUIModel>
+    private lateinit var currencyList: List<CurrencyEntity>
+    private lateinit var exchangeRateList: List<ExchangeRateEntity>
     private lateinit var exception: Exception
 
     @get:Rule
@@ -45,13 +48,13 @@ class PayPayViewModelTest {
 
         //Mocking data for my testing
         exception = Exception("Unknown Host Exception")
-        currencyListUIModel =
-            listOf(CurrencyTypeUIModel("INR : Indian Rupee"))
+        currencyList =
+            listOf(CurrencyEntity(currencyName = "InR", currencyValue = "INR : Indian Rupee"))
 
-        exchangeRateUiModelList =
+        exchangeRateList =
             listOf(
-                ExchangeRateUIModel(currencyName = "INR", exchangeValue = 82.85),
-                ExchangeRateUIModel(currencyName = "JPY", exchangeValue = 147.63)
+                ExchangeRateEntity(currencyName = "INR", currencyValue = 82.85),
+                ExchangeRateEntity(currencyName = "JPY", currencyValue = 147.63)
             )
     }
 
@@ -62,28 +65,22 @@ class PayPayViewModelTest {
 
     @Test
     fun `fetchCurrencies return list from use case`() {
-        //Given
-        coEvery { useCase.getCurrenciesList() } returns currencyListUIModel
+        coEvery { useCase.getCurrenciesList() } returns currencyList
 
-        //When
         viewModel.fetchCurrencies()
 
-        //Then
         assertEquals(
             "INR : Indian Rupee",
-            (viewModel.currencyListLiveData.value as CurrencyExchangeUIState.Success).data[0].currency
+            (viewModel.currencyListLiveData.value as CurrencyExchangeUIState.Success).data[0].currencyValue
         )
     }
 
     @Test
     fun `fetchCurrencies throw exception`() {
-        //Given
         coEvery { useCase.getCurrenciesList() } throws exception
 
-        //When
         viewModel.fetchCurrencies()
 
-        //Then
         assertEquals(
             "Unknown Host Exception",
             (viewModel.currencyListLiveData.value as CurrencyExchangeUIState.Fail).throwable.message
@@ -92,31 +89,44 @@ class PayPayViewModelTest {
 
     @Test
     fun `fetchExchangeRate return exchange rate list from use case`() {
-        //Given
-        coEvery { useCase.getExchangeRateData(any(), 1.0) } returns exchangeRateUiModelList
+        coEvery { useCase.getExchangeRateData(any(), 1.0) } returns exchangeRateList
 
-        //When
         viewModel.fetchExchangeRate(1.0)
 
-        //Then
         assertEquals(
             "82.85",
-            ((viewModel.currencyExchangeLiveData.value as CurrencyExchangeUIState.Success).data[0].exchangeValue).toString()
+            ((viewModel.currencyExchangeLiveData.value as CurrencyExchangeUIState.Success).data[0].currencyValue).toString()
         )
     }
 
     @Test
     fun `fetchExchangeRate throw exception`() {
-        //Given
         coEvery { useCase.getExchangeRateData(any(), 1.0) } throws exception
 
-        //When
         viewModel.fetchExchangeRate(1.0)
 
-        //Then
         assertEquals(
             "Unknown Host Exception",
             (viewModel.currencyExchangeLiveData.value as CurrencyExchangeUIState.Fail).throwable.message
         )
+    }
+
+    @Test
+    fun `fetchSelectedCurrencyRate returns emptyList if selected is null`() {
+
+        viewModel.fetchSelectedCurrencyRate(null)
+
+        assertTrue((viewModel.currencyExchangeLiveData.value as CurrencyExchangeUIState.Success).data.isEmpty())
+
+    }
+
+    @Test
+    fun `fetchSelectedCurrencyRate fetches currency rates`() {
+        val mockEditable: Editable = mockk(relaxed = true)
+        coEvery { viewModel.fetchExchangeRate(any()) } just Runs
+
+        viewModel.fetchSelectedCurrencyRate(mockEditable)
+
+        verify { viewModel.fetchSelectedCurrencyRate(mockEditable) }
     }
 }

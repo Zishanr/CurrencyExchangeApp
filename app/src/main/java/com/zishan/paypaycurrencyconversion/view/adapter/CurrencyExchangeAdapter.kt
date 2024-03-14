@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.zishan.paypaycurrencyconversion.R
-import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
 
-class CurrencyExchangeAdapter(diffCallback: DiffUtil.ItemCallback<ExchangeRateUIModel> = ComponentsDiffCallBacks()) :
-    ListAdapter<ExchangeRateUIModel, CurrencyExchangeVH>(diffCallback) {
+class CurrencyExchangeAdapter(diffCallback: DiffUtil.ItemCallback<ExchangeRateEntity> = ComponentsDiffCallBacks()) :
+    ListAdapter<ExchangeRateEntity, CurrencyExchangeVH>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrencyExchangeVH {
         val view = LayoutInflater.from(parent.context)
@@ -24,17 +24,17 @@ class CurrencyExchangeAdapter(diffCallback: DiffUtil.ItemCallback<ExchangeRateUI
         return super.getItemCount()
     }
 
-    class ComponentsDiffCallBacks : DiffUtil.ItemCallback<ExchangeRateUIModel>() {
+    class ComponentsDiffCallBacks : DiffUtil.ItemCallback<ExchangeRateEntity>() {
         override fun areItemsTheSame(
-            oldItem: ExchangeRateUIModel,
-            newItem: ExchangeRateUIModel
+            oldItem: ExchangeRateEntity,
+            newItem: ExchangeRateEntity
         ): Boolean {
             return oldItem === newItem
         }
 
         override fun areContentsTheSame(
-            oldItem: ExchangeRateUIModel,
-            newItem: ExchangeRateUIModel
+            oldItem: ExchangeRateEntity,
+            newItem: ExchangeRateEntity
         ): Boolean {
             return newItem == oldItem
         }

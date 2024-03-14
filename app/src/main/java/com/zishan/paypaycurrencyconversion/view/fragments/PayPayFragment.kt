@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zishan.paypaycurrencyconversion.MainApplication
 import com.zishan.paypaycurrencyconversion.R
+import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.databinding.FragmentPayPayBinding
 import com.zishan.paypaycurrencyconversion.di.component.DaggerPayPayComponent
 import com.zishan.paypaycurrencyconversion.di.factory.ViewModelProviderFactory
-import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
 import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.SPAN_SIZE
 import com.zishan.paypaycurrencyconversion.utils.showToast
 import com.zishan.paypaycurrencyconversion.view.adapter.CurrencyExchangeAdapter
@@ -148,11 +148,11 @@ class PayPayFragment : Fragment() {
         }
     }
 
-    private fun submitToArrayAdapter(data: List<CurrencyTypeUIModel>) {
+    private fun submitToArrayAdapter(data: List<CurrencyEntity>) {
         currencySpinnerAdapter?.run {
             clear()
             addAll((data.map { currencyUIModel ->
-                currencyUIModel.currency
+                currencyUIModel.currencyValue
             }))
         }
     }

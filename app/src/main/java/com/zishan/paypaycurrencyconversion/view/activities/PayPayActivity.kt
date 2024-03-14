@@ -23,7 +23,7 @@ class PayPayActivity : AppCompatActivity() {
 
     private fun setupFragment() {
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, PayPayFragment(), "PayPayFragment")
+            .add(R.id.fragment_container, PayPayFragment())
             .commit()
     }
 }

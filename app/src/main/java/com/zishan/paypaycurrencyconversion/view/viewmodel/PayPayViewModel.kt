@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zishan.paypaycurrencyconversion.domain.uimodels.CurrencyTypeUIModel
-import com.zishan.paypaycurrencyconversion.domain.uimodels.ExchangeRateUIModel
+import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
+import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
 import com.zishan.paypaycurrencyconversion.domain.usecase.CurrencyUseCase
 import com.zishan.paypaycurrencyconversion.utils.launchAndCatchError
 import com.zishan.paypaycurrencyconversion.view.uistate.CurrencyExchangeUIState
@@ -20,14 +20,14 @@ class PayPayViewModel @Inject constructor(
     private val currencyUseCase: CurrencyUseCase,
 ) : ViewModel() {
 
-    private val _currencyListLiveData: MutableLiveData<CurrencyExchangeUIState<List<CurrencyTypeUIModel>>> =
+    private val _currencyListLiveData: MutableLiveData<CurrencyExchangeUIState<List<CurrencyEntity>>> =
         MutableLiveData()
-    val currencyListLiveData: LiveData<CurrencyExchangeUIState<List<CurrencyTypeUIModel>>> =
+    val currencyListLiveData: LiveData<CurrencyExchangeUIState<List<CurrencyEntity>>> =
         _currencyListLiveData
 
-    private val _currencyExchangeLiveData: MutableLiveData<CurrencyExchangeUIState<List<ExchangeRateUIModel>>> =
+    private val _currencyExchangeLiveData: MutableLiveData<CurrencyExchangeUIState<List<ExchangeRateEntity>>> =
         MutableLiveData()
-    val currencyExchangeLiveData: LiveData<CurrencyExchangeUIState<List<ExchangeRateUIModel>>> =
+    val currencyExchangeLiveData: LiveData<CurrencyExchangeUIState<List<ExchangeRateEntity>>> =
         _currencyExchangeLiveData
 
     var selectedSpinnerIndex = 0

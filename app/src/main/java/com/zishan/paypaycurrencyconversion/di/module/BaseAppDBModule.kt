@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.db.CurrencyDataBase
 import com.zishan.paypaycurrencyconversion.di.qualifier.ApplicationContext
 import com.zishan.paypaycurrencyconversion.di.scope.ApplicationScope
+import com.zishan.paypaycurrencyconversion.utils.PayPayConstant.DBConstant.CURRENCY_DATABASE
 import dagger.Module
 import dagger.Provides
 
@@ -18,7 +19,7 @@ class BaseAppDBModule {
         return Room.databaseBuilder(
             applicationContext,
             CurrencyDataBase::class.java,
-            "currency-database"
+            CURRENCY_DATABASE
         ).build()
     }
 }
