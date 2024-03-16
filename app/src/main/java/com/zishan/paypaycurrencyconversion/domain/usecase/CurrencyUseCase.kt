@@ -2,18 +2,18 @@ package com.zishan.paypaycurrencyconversion.domain.usecase
 
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
-import com.zishan.paypaycurrencyconversion.data.repository.PayPayRepo
+import com.zishan.paypaycurrencyconversion.data.repository.PayPayRepoImpl
 import com.zishan.paypaycurrencyconversion.domain.datamapper.PayPayDataMapper
 import javax.inject.Inject
 
 class CurrencyUseCase @Inject constructor(
-    private val payPayRepo: PayPayRepo,
+    private val payPayRepoImpl: PayPayRepoImpl,
     private val dataMapper: PayPayDataMapper
 ) {
     private val currencyKeyList by lazy { mutableListOf<String>() }
 
     suspend fun getCurrenciesList(): List<CurrencyEntity> {
-        val currencyData = payPayRepo.getCurrencies()
+        val currencyData = payPayRepoImpl.getCurrencies()
         saveCurrencyKeyList(currencyData)
         return dataMapper.mapToCurrencyList(currencyData)
     }
@@ -29,10 +29,10 @@ class CurrencyUseCase @Inject constructor(
         textValue: Double
     ): List<ExchangeRateEntity> {
         if (selectedCurrencyIndex == 0) return listOf()
-        val currencyData = payPayRepo.getExchangeRates()
+        val currencyData = payPayRepoImpl.getExchangeRates()
         if (currencyData.isNotEmpty()) {
             val selectedCurrencyRate =
-                payPayRepo.getSelectedCurrencyRate(currencyKeyList[selectedCurrencyIndex - 1])
+                payPayRepoImpl.getSelectedCurrencyRate(currencyKeyList[selectedCurrencyIndex - 1])
             return dataMapper.mapToCurrencyModel(
                 currencyData,
                 selectedCurrencyRate,

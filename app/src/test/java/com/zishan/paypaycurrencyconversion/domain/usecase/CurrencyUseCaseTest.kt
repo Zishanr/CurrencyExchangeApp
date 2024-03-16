@@ -2,7 +2,7 @@ package com.zishan.paypaycurrencyconversion.domain.usecase
 
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.CurrencyEntity
 import com.zishan.paypaycurrencyconversion.data.datasource.local.room.entities.ExchangeRateEntity
-import com.zishan.paypaycurrencyconversion.data.repository.PayPayRepo
+import com.zishan.paypaycurrencyconversion.data.repository.PayPayRepoImpl
 import com.zishan.paypaycurrencyconversion.domain.datamapper.PayPayDataMapper
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -16,7 +16,7 @@ import org.junit.Test
 
 class CurrencyUseCaseTest {
 
-    private lateinit var payPayRepo: PayPayRepo
+    private lateinit var payPayRepoImpl: PayPayRepoImpl
     private lateinit var payDataMapper: PayPayDataMapper
     private lateinit var currencyUseCase: CurrencyUseCase
     private lateinit var currencyList: List<CurrencyEntity>
@@ -25,9 +25,9 @@ class CurrencyUseCaseTest {
 
     @Before
     fun setUp() {
-        payPayRepo = mockk(relaxed = true)
+        payPayRepoImpl = mockk(relaxed = true)
         payDataMapper = mockk(relaxed = true)
-        currencyUseCase = spyk(CurrencyUseCase(payPayRepo, payDataMapper))
+        currencyUseCase = spyk(CurrencyUseCase(payPayRepoImpl, payDataMapper))
 
         //Mocking data for my testing
         currencyList =
@@ -55,7 +55,7 @@ class CurrencyUseCaseTest {
     @Test
     fun `getCurrenciesList fetching currency list from repo`() {
         runTest {
-            coEvery { payPayRepo.getCurrencies() } returns currencyList
+            coEvery { payPayRepoImpl.getCurrencies() } returns currencyList
             coEvery { payDataMapper.mapToCurrencyList(any()) } returns currencyList
 
             val result = currencyUseCase.getCurrenciesList()
@@ -79,8 +79,8 @@ class CurrencyUseCaseTest {
     fun `getExchangeRateData returns empty list if user has selected any currency`() {
         runTest {
             currencyUseCase.saveCurrencyKeyList(currencyList)
-            coEvery { payPayRepo.getExchangeRates() } returns exchangeList
-            coEvery { payPayRepo.getSelectedCurrencyRate(any()) } returns 82.85
+            coEvery { payPayRepoImpl.getExchangeRates() } returns exchangeList
+            coEvery { payPayRepoImpl.getSelectedCurrencyRate(any()) } returns 82.85
             coEvery {
                 payDataMapper.mapToCurrencyModel(
                     exchangeList,

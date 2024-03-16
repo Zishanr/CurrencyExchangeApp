@@ -26,13 +26,13 @@ import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class PayPayRepoTest {
+class PayPayRepoImplTest {
 
     private lateinit var remoteDataSource: RemoteDataSource
     private lateinit var localDataSource: LocalDataSource
     private lateinit var dispatcher: CoroutineTestDispatchersProvider
     private lateinit var payUtils: PayPayUtils
-    private lateinit var payPayRepo: PayPayRepo
+    private lateinit var payPayRepoImpl: PayPayRepoImpl
     private lateinit var exception: Exception
 
     private lateinit var currencyList: List<CurrencyEntity>
@@ -50,7 +50,7 @@ class PayPayRepoTest {
         dispatcher = CoroutineTestDispatchersProvider
         Dispatchers.setMain(dispatcher.testDispatcher)
         payUtils = mockk(relaxed = true)
-        payPayRepo = spyk(PayPayRepo(remoteDataSource, localDataSource, dispatcher, payUtils))
+        payPayRepoImpl = spyk(PayPayRepoImpl(remoteDataSource, localDataSource, dispatcher, payUtils))
 
 
         //Mocking data for my testing
@@ -74,7 +74,7 @@ class PayPayRepoTest {
 
             every { payUtils.isRefreshData(any()) } returns false
             coEvery { localDataSource.getCurrencies() } returns currencyList
-            val result = payPayRepo.getCurrencies()
+            val result = payPayRepoImpl.getCurrencies()
 
             Assert.assertEquals(1, result.size)
             Assert.assertEquals("INR", result[0].currencyName)
@@ -90,7 +90,7 @@ class PayPayRepoTest {
             coEvery { localDataSource.saveCurrencies(any()) } just Runs
             coEvery { localDataSource.saveTimeStamp(any()) } just Runs
             coEvery { localDataSource.getCurrencies() } returns currencyList
-            val result = payPayRepo.getCurrencies()
+            val result = payPayRepoImpl.getCurrencies()
 
             Assert.assertEquals(1, result.size)
             Assert.assertEquals("INR", result[0].currencyName)
@@ -103,7 +103,7 @@ class PayPayRepoTest {
         runTest {
             every { payUtils.isRefreshData(any()) } returns false
             coEvery { localDataSource.getExchangeRates() } returns exchangeList
-            val result = payPayRepo.getExchangeRates()
+            val result = payPayRepoImpl.getExchangeRates()
             Assert.assertEquals(1, result.size)
             Assert.assertEquals("INR", result[0].currencyName)
             Assert.assertEquals("82.0", result[0].currencyValue.toString())
@@ -120,7 +120,7 @@ class PayPayRepoTest {
             coEvery { localDataSource.getExchangeRates() } returns exchangeList
             coEvery { localDataSource.saveExchangeRates(any()) } just Runs
             coEvery { localDataSource.saveTimeStamp(any()) } just Runs
-            val result = payPayRepo.getExchangeRates()
+            val result = payPayRepoImpl.getExchangeRates()
             Assert.assertEquals(1, result.size)
             Assert.assertEquals("INR", result[0].currencyName)
             Assert.assertEquals("82.0", result[0].currencyValue.toString())
@@ -133,7 +133,7 @@ class PayPayRepoTest {
             every { payUtils.isRefreshData(any()) } returns true
             coEvery { remoteDataSource.getExchangeRates() } throws exception
             coEvery { localDataSource.getExchangeRates() } returns exchangeList
-            val result = payPayRepo.getExchangeRates()
+            val result = payPayRepoImpl.getExchangeRates()
 
             Assert.assertEquals(1, result.size)
             Assert.assertEquals("INR", result[0].currencyName)
@@ -147,7 +147,7 @@ class PayPayRepoTest {
             every { payUtils.isRefreshData(any()) } returns true
             coEvery { remoteDataSource.getExchangeRates() } throws exception
             coEvery { localDataSource.getExchangeRates() } returns listOf()
-            payPayRepo.getExchangeRates()
+            payPayRepoImpl.getExchangeRates()
 
         }
     }
@@ -156,7 +156,7 @@ class PayPayRepoTest {
     fun `getSelectedCurrencyRate from DB for selected currency`() {
         runTest {
             coEvery { localDataSource.getSelectedCurrencyRate(any()) } returns 82.0
-            val result = payPayRepo.getSelectedCurrencyRate("INR")
+            val result = payPayRepoImpl.getSelectedCurrencyRate("INR")
             Assert.assertEquals("82.0", result.toString())
         }
     }
